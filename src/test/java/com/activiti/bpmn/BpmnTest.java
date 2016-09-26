@@ -1,9 +1,7 @@
 package com.activiti.bpmn;
 
 import com.activiti.util.ExceptionUtil;
-import org.activiti.engine.HistoryService;
-import org.activiti.engine.ProcessEngine;
-import org.activiti.engine.ProcessEngines;
+import org.activiti.engine.*;
 import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.ProcessDefinition;
@@ -15,7 +13,6 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -39,13 +36,22 @@ public class BpmnTest {
     private ProcessEngine processEngine;
 
     @Autowired
+    private RepositoryService repositoryService;
+
+    @Autowired
+    private TaskService taskService;
+
+    @Autowired
+    private RuntimeService runtimeService;
+
+    @Autowired
     private HistoryService historyService;
     /**
      *  部署流程定义
      */
     @Test
     public void bpmnTest(){
-        Deployment deployment = processEngine.getRepositoryService()    // 与流程定义和部署对象相关的Service
+        Deployment deployment = repositoryService    // 与流程定义和部署对象相关的Service
                 .createDeployment()     // 与流程定义和部署对象相关的Service
                 .name("入门程序")   //添加部署的名称
                 .addClasspathResource("bpmn/BpmnTest.bpmn")     //从resources的资源中加载，一次只能加载一个文件
@@ -61,7 +67,7 @@ public class BpmnTest {
     public void startProcess(){
         // 流程定义的key
         String processDefinitionKey = "myProcess_1";
-        ProcessInstance pi = processEngine.getRuntimeService()  //与正在执行的流程实例和执行对象相关的Service
+        ProcessInstance pi = runtimeService  //与正在执行的流程实例和执行对象相关的Service
                 .startProcessInstanceByKey(processDefinitionKey); //使用流程定义的key启动流程实例，key对应helloworld.bpmn文件中id的属性值，使用key值启动，默认是按照最新版本的流程定义启动
         System.out.println("流程实例ID："+pi.getId());
         System.out.println("流程定义ID："+pi.getProcessDefinitionId());
@@ -73,7 +79,7 @@ public class BpmnTest {
     @Test
     public void findMyPersonalTask(){
         String assgine = "task1";
-        List<Task> list = processEngine.getTaskService()    //与正在执行的任务管理相关的Service
+        List<Task> list = taskService    //与正在执行的任务管理相关的Service
                 .createTaskQuery()  //创建任务查询对象
                 .taskAssignee(assgine)  //指定个人任务查询，指定办理人
                 .list();
@@ -100,7 +106,7 @@ public class BpmnTest {
     public void compeleteMyPersonalTask(){
         // 任务ID
         String taskID = "5002";
-        processEngine.getTaskService()  //与正在执行的任务管理相关的Service
+        taskService  //与正在执行的任务管理相关的Service
                 .complete(taskID);
         System.out.println("完成任务：任务ID："+taskID);
     }
@@ -110,9 +116,9 @@ public class BpmnTest {
      */
     @Test
     public void viewPic(){
-        String deploymentId = "1";
+        String deploymentId = "15001";
         // 获取图片资源名称
-        List<String > list = processEngine.getRepositoryService().getDeploymentResourceNames(deploymentId);
+        List<String > list = repositoryService.getDeploymentResourceNames(deploymentId);
         // 定义图片名称
         String resourceName = "";
         if(list != null && list.size()>0){
@@ -124,15 +130,14 @@ public class BpmnTest {
         }
         try {
             // 获取图片的输入流
-            InputStream in = processEngine.getRepositoryService().getResourceAsStream(deploymentId,resourceName);
+            InputStream in = repositoryService.getResourceAsStream(deploymentId,resourceName);
             // 将生成的图片保存
-            File file = new File("D:/"+resourceName);
+            File file = new File("D:/bpmn/myprocess.png");
             // 将输入流写入
             FileUtils.copyInputStreamToFile(in,file);
         }catch (IOException e){
             log.info("写入文件异常："+ ExceptionUtil.getErrorInfo(e));
         }
-
     }
     /**
      *  查看流程状态
@@ -141,7 +146,7 @@ public class BpmnTest {
     @Test
     public void idProcessEnd(){
         String processInstanceId = "10001";
-        ProcessInstance pi = processEngine.getRuntimeService()
+        ProcessInstance pi = runtimeService
                 .createProcessInstanceQuery()
                 .processInstanceId(processInstanceId)
                 .singleResult();
@@ -156,7 +161,7 @@ public class BpmnTest {
      */
     @Test
     public void findProcessDefinition(){
-        List<ProcessDefinition> list = processEngine.getRepositoryService()//与流程定义和部署对象相关的Service
+        List<ProcessDefinition> list = repositoryService//与流程定义和部署对象相关的Service
                 .createProcessDefinitionQuery()//创建一个流程定义的查询
                 /**指定查询条件,where条件*/
 //                .deploymentId(deploymentId)//使用部署对象ID查询
@@ -207,8 +212,7 @@ public class BpmnTest {
          * 级联删除
          *    不管流程是否启动，都能可以删除
          */
-        processEngine.getRepositoryService()//
-                .deleteDeployment(deploymentId, true);
+        repositoryService.deleteDeployment(deploymentId, true);
         System.out.println("删除成功！");
     }
     /**
@@ -220,7 +224,7 @@ public class BpmnTest {
         //流程定义的key
         String processDefinitionKey = "myProcess_1";
         //先使用流程定义的key查询流程定义，查询出所有的版本
-        List<ProcessDefinition> list = processEngine.getRepositoryService()
+        List<ProcessDefinition> list = repositoryService
                 .createProcessDefinitionQuery()//
                 .processDefinitionKey(processDefinitionKey)//使用流程定义的key查询
                 .list();
@@ -229,8 +233,7 @@ public class BpmnTest {
             for(ProcessDefinition pd:list){
                 //获取部署ID
                 String deploymentId = pd.getDeploymentId();
-                processEngine.getRepositoryService()
-                        .deleteDeployment(deploymentId, true);
+                repositoryService.deleteDeployment(deploymentId, true);
             }
         }
     }
