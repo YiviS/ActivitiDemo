@@ -1,6 +1,7 @@
 package com.activiti.bpmn;
 
 import com.activiti.util.ExceptionUtil;
+import org.activiti.engine.HistoryService;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.ProcessEngines;
 import org.activiti.engine.history.HistoricProcessInstance;
@@ -10,8 +11,13 @@ import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,12 +29,17 @@ import java.util.List;
  * @Date 2016-09-23 14:11
  * @Desc  基础测试
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration("classpath:applicationContext.xml")
 public class BpmnTest {
 
     private static Logger log = LoggerFactory.getLogger(BpmnTest.class);    // 日志
 
-    private ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine(); //流程引擎
+    @Autowired
+    private ProcessEngine processEngine;
 
+    @Autowired
+    private HistoryService historyService;
     /**
      *  部署流程定义
      */
@@ -230,7 +241,7 @@ public class BpmnTest {
     @Test
     public void findHistoryProcessInstance(){
         String processDefinitionKey = "myProcess_1";
-        List<HistoricProcessInstance> list = processEngine.getHistoryService()//与历史数据（历史表）相关的Service
+        List<HistoricProcessInstance> list = historyService//与历史数据（历史表）相关的Service
                 .createHistoricProcessInstanceQuery()//创建历史流程实例查询
                 .processDefinitionKey(processDefinitionKey)
                 .list();
