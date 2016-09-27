@@ -53,8 +53,8 @@ public class BpmnTest {
     public void bpmnTest(){
         Deployment deployment = repositoryService    // 与流程定义和部署对象相关的Service
                 .createDeployment()     // 与流程定义和部署对象相关的Service
-                .name("入门程序")   //添加部署的名称
-                .addClasspathResource("bpmn/BpmnTest.bpmn")     //从resources的资源中加载，一次只能加载一个文件
+                .name("请假流程")   //添加部署的名称
+                .addClasspathResource("bpmn/leave.bpmn")     //从resources的资源中加载，一次只能加载一个文件
                 .deploy();  //完成部署
         System.out.println("部署ID："+deployment.getId());
         System.out.println("部署名字："+deployment.getName());

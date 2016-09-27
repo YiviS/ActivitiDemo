@@ -5,7 +5,7 @@
        default-autowire="byName">
     <bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
         <!-- 数据库连接配置 -->
-        <property name="url" value="jdbc:mysql://127.0.0.1:3306/activiti_demo"></property>
+        <property name="url" value="jdbc:mysql://127.0.0.1:3306/activiti_demo?useUnicode=true&amp;characterEncoding=utf-8 "></property>
         <property name="driverClass" value="com.mysql.jdbc.Driver"></property>
         <property name="username" value="root"></property>
         <property name="password" value="root"></property>
