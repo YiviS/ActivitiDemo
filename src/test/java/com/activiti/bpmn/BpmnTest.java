@@ -66,7 +66,7 @@ public class BpmnTest {
     @Test
     public void startProcess(){
         // 流程定义的key
-        String processDefinitionKey = "myProcess_1";
+        String processDefinitionKey = "leave_process";
         ProcessInstance pi = runtimeService  //与正在执行的流程实例和执行对象相关的Service
                 .startProcessInstanceByKey(processDefinitionKey); //使用流程定义的key启动流程实例，key对应helloworld.bpmn文件中id的属性值，使用key值启动，默认是按照最新版本的流程定义启动
         System.out.println("流程实例ID："+pi.getId());
@@ -78,10 +78,11 @@ public class BpmnTest {
      */
     @Test
     public void findMyPersonalTask(){
-        String assgine = "task1";
+        String assgine = "user";
         List<Task> list = taskService    //与正在执行的任务管理相关的Service
                 .createTaskQuery()  //创建任务查询对象
-                .taskAssignee(assgine)  //指定个人任务查询，指定办理人
+                .taskCandidateOrAssigned(assgine)
+//                .taskAssignee(assgine)  //指定个人任务查询，指定办理人
                 .list();
         if(list != null && list.size() > 0){
             for(Task task : list){
@@ -145,7 +146,7 @@ public class BpmnTest {
      */
     @Test
     public void idProcessEnd(){
-        String processInstanceId = "10001";
+        String processInstanceId = "2501";
         ProcessInstance pi = runtimeService
                 .createProcessInstanceQuery()
                 .processInstanceId(processInstanceId)

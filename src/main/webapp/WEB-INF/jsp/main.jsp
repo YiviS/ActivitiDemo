@@ -7,6 +7,8 @@
 --%>
 <%@ page language="java"  pageEncoding="UTF-8" contentType="text/html; charset=utf-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix='fn' uri='http://java.sun.com/jsp/jstl/functions' %>
+<%@ taglib prefix='fmt' uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ include file="/WEB-INF/plugin/head.jsp" %>
 <div class="container">
 
@@ -65,7 +67,7 @@
                             <td>${pd.name}</td>
                             <td>${pd.version}</td>
                             <td>
-                                <a href="${path}/startProcessDefinition.do?processDefId=${pd.id}">启动流程</a>
+                                <a href="${path}/startProcessDefinition.do?processDefId=${pd.id}&userId=${user.id}">启动流程</a>
                                 &nbsp;|&nbsp;
                                 <a href="${path}/viewprocessDef.do?processDefId=${pd.id}" target="_blank">查看流程定义</a>
                                 &nbsp;|&nbsp;
@@ -73,6 +75,106 @@
                                 &nbsp;|&nbsp;
                                 <a href="${path}/remove.do?processDefId=${pd.id}">删除</a>
                             </td>
+                        </tr>
+                    </c:forEach>
+                    </tbody>
+                </table>
+            </div>
+            <!--可认领任务列表 -->
+            <c:if test="${fn:length(groupTasks)>0}">
+                <div id="claimtasklist">
+                    <table  class="table table-bordered table-hover">
+                        <caption><h3><strong>可认领任务</strong></h3></caption>
+                        <thead>
+                        <tr>
+                            <th>任务ID</th>
+                            <th>任务名称</th>
+                            <th>&nbsp;</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        <c:forEach var="task" items="${groupTasks}"  >
+                            <tr>
+                                <td>${task.id}</td>
+                                <td>${task.name}</td>
+                                <td><a href="${path}/simple/claim/${task.id}?userId=${user.id}">认领</a></td>
+                            </tr>
+                        </c:forEach>
+                        </tbody>
+                    </table>
+                </div>
+            </c:if>
+            <!-- 待办任务列表-->
+            <c:if test="${fn:length(userTasks)>0}">
+                <div id="tasklist">
+                    <table  class="table table-bordered table-hover">
+                        <caption><h3><strong>待办任务</strong></h3></caption>
+                        <thead>
+                        <tr>
+                            <th>任务ID</th>
+                            <th>任务名称</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        <c:forEach var="task" items="${userTasks}"  >
+                            <tr>
+                                <td>${task.id}</td>
+                                <td>${task.name}</td>
+                                <td><a href="${path}/simple/form.do?taskId=${task.id}">执行</a></td>
+                            </tr>
+                        </c:forEach>
+                        </tbody>
+                    </table>
+                </div>
+            </c:if>
+            <%-- 任务流转状况 --%>
+            <div id="taskinfo">
+                <table  class="table table-bordered table-hover">
+                    <caption><h3><strong>任务流转状况</strong></h3></caption>
+                    <thead>
+                    <tr>
+                        <th>流程实例ID</th>
+                        <th>当前任务ID</th>
+                        <th>当前任务</th>
+                        <th>任务执行人</th>
+                        <th>查看</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <c:forEach var="task" items="${taskList}"  >
+                        <tr>
+                            <td>${task.processInstanceId}</td>
+                            <td>${task.id}</td>
+                            <td>${task.name}</td>
+                            <td><c:out value="${task.assignee}" default="未认领"/></td>
+                            <td><a href="${path}/view.do?executionId=${task.executionId}" target="_blank">流程图</a></td>
+                        </tr>
+                    </c:forEach>
+                    </tbody>
+                </table>
+            </div>
+            <%-- 历史流程 --%>
+            <div id="taskhistory">
+                <table  class="table table-bordered table-hover">
+                    <caption><h3><strong>历史流程</strong></h3></caption>
+                    <thead>
+                    <tr>
+                        <th>id</th>
+                        <th>发起人</th>
+                        <th>开始时间</th>
+                        <th>结束时间</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <c:forEach var="hpi" items="${hpiList}">
+                        <tr>
+                            <td>${hpi.id}</td>
+                            <td>${hpi.startUserId}</td>
+                            <td><fmt:formatDate value="${hpi.startTime}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
+                            <td><fmt:formatDate value="${hpi.endTime}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
                         </tr>
                     </c:forEach>
                     </tbody>

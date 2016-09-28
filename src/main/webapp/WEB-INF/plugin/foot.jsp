@@ -21,7 +21,7 @@
                 $('.modal-body').text(data);
             });
         }else if(title=="请假流程图"){
-            $('.modal-body').html('<img width="100%"alt="'+title+'" src="'+url+'">');
+            $('.modal-body').html('<img width="568px" height="255px" alt="'+title+'" src="'+url+'">');
         }
         $('.modal-title').html(title);
         $('#pdfModal').modal({keyboard: false});

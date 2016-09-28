@@ -123,7 +123,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="${path }/index.do">基于Activiti5.21.0和Bootstrap3.3.0的请假流程</a>
+            <a class="navbar-brand" href="${path }/login.do">基于Activiti5.21.0和Bootstrap3.3.0的请假流程</a>
         </div>
         <div class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
@@ -142,12 +142,12 @@
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <c:if test="${empty user.id}">
-                    <li><a href="${path}/simple/login.do">登录 <span class="glyphicon glyphicon-log-in"></span></a></li>
+                    <li><a href="${path}/login.do">登录 <span class="glyphicon glyphicon-log-in"></span></a></li>
                 </c:if>
                 <c:if test="${!empty user.id}">
-                    <li><a href="#">${user.id} <span class="glyphicon glyphicon-user"></span></a></li>
-                    <li><a href="${path}/simple/login.do">注销 <span class="glyphicon glyphicon glyphicon-off"></span></a></li>
-                    <li><a href="#">退出 <span class="glyphicon glyphicon-log-out"></span></a></li>
+                    <li><a href="${path}/main.do">${user.id} <span class="glyphicon glyphicon-user"></span></a></li>
+                    <li><a href="${path}/login.do">注销 <span class="glyphicon glyphicon glyphicon-off"></span></a></li>
+                    <li><a href="${path}/outlogin.do">退出 <span class="glyphicon glyphicon-log-out"></span></a></li>
                 </c:if>
             </ul>
         </div><!-- /.nav-collapse -->
