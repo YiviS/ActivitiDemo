@@ -43,6 +43,7 @@
     <bean id="processEngine" class="org.activiti.spring.ProcessEngineFactoryBean">
         <property name="processEngineConfiguration" ref="processEngineConfiguration" />
     </bean>
+
     <!-- 创建activiti提供的各种服务 -->
     <!-- 工作流仓储服务 -->
     <bean id="repositoryService" factory-bean="processEngine" factory-method="getRepositoryService" />
@@ -58,4 +59,7 @@
     <bean id="IdentityService" factory-bean="processEngine" factory-method="getIdentityService" />
     <!-- 工作流外置表单服务 -->
     <bean id="formService" factory-bean="processEngine" factory-method="getFormService" />
+    <!-- 工作流流程图例工具 -->
+    <bean id="processDiagramGenerator" class="org.activiti.image.impl.DefaultProcessDiagramGenerator"/>
+
 </beans>

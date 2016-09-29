@@ -6,6 +6,7 @@ import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.IdentityLink;
 import org.activiti.engine.task.Task;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
@@ -54,7 +55,7 @@ public class BpmnTest {
         Deployment deployment = repositoryService    // 与流程定义和部署对象相关的Service
                 .createDeployment()     // 与流程定义和部署对象相关的Service
                 .name("请假流程")   //添加部署的名称
-                .addClasspathResource("bpmn/leave.bpmn")     //从resources的资源中加载，一次只能加载一个文件
+                .addClasspathResource("bpmn/leave1.bpmn")     //从resources的资源中加载，一次只能加载一个文件
                 .deploy();  //完成部署
         System.out.println("部署ID："+deployment.getId());
         System.out.println("部署名字："+deployment.getName());
@@ -78,11 +79,12 @@ public class BpmnTest {
      */
     @Test
     public void findMyPersonalTask(){
-        String assgine = "user";
+        String assgine = "42518";
         List<Task> list = taskService    //与正在执行的任务管理相关的Service
                 .createTaskQuery()  //创建任务查询对象
-                .taskCandidateOrAssigned(assgine)
-//                .taskAssignee(assgine)  //指定个人任务查询，指定办理人
+                .taskCandidateUser("owner")
+//                .taskId("42511")
+//                .taskAssignee("pl1")  //指定个人任务查询，指定办理人
                 .list();
         if(list != null && list.size() > 0){
             for(Task task : list){
@@ -100,6 +102,17 @@ public class BpmnTest {
         }
     }
     /**
+     * 公有任务认领
+     * @throws Exception
+     */
+    @Test
+    public void testClaimTask() throws Exception {
+        //认领任务
+        String userId ="pl1";
+        String taskId="42511";
+        taskService.claim(taskId, userId);
+    }
+    /**
      *  完成我的任务
      *  @Param taskID 任务ID
      */
@@ -110,6 +123,23 @@ public class BpmnTest {
         taskService  //与正在执行的任务管理相关的Service
                 .complete(taskID);
         System.out.println("完成任务：任务ID："+taskID);
+    }
+    /**查询正在执行的组任务列表*/
+    @Test
+    public void findGroupCandidate() {
+        // 任务ID
+        String taskId = "42511";
+        List<IdentityLink> list = taskService//
+                .getIdentityLinksForTask(taskId);
+        if (list != null && list.size() > 0) {
+            for (IdentityLink identityLink : list) {
+                System.out.println("任务ID：" + identityLink.getTaskId());
+                System.out.println("流程实例ID：" + identityLink.getProcessInstanceId());
+                System.out.println("用户ID：" + identityLink.getUserId());
+                System.out.println("工作流角色ID：" + identityLink.getGroupId());
+                System.out.println("#########################################");
+            }
+        }
     }
     /**
      *  查看流程图

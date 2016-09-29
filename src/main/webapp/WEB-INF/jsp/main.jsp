@@ -98,7 +98,7 @@
                             <tr>
                                 <td>${task.id}</td>
                                 <td>${task.name}</td>
-                                <td><a href="${path}/simple/claim/${task.id}?userId=${user.id}">认领</a></td>
+                                <td><a href="${path}/claim.do?userId=${user.id}&taskId=${task.id}">认领</a></td>
                             </tr>
                         </c:forEach>
                         </tbody>
@@ -123,7 +123,7 @@
                             <tr>
                                 <td>${task.id}</td>
                                 <td>${task.name}</td>
-                                <td><a href="${path}/simple/form.do?taskId=${task.id}">执行</a></td>
+                                <td><a href="${path}/form.do?taskId=${task.id}">执行</a></td>
                             </tr>
                         </c:forEach>
                         </tbody>
